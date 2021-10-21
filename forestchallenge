@@ -1,0 +1,211 @@
+#include <kipr/wombat.h>
+
+//declare variables
+
+int lsensor = 9;
+
+int rsensor = 0;
+
+int lmotor = 0;
+
+int rmotor = 3;
+
+int motor_Fpower = -100;
+
+int motor_Bpower = 100;
+
+int motor_stoppower=0;
+
+int state = 0;
+
+int reverse_Time=750;
+
+int turn_time=700;
+
+int flip_time=2000;
+
+int rcount = 0;
+
+int lcount = 0;
+
+ 
+
+//void methods
+
+void drivestraight() //While no buttons are pressed keep starting forward code (msleep is to go straight little bit longer then detection to allow time for both to be pressed if thats the case)
+
+{
+
+  motor(rmotor, motor_Fpower);
+
+  motor(lmotor, motor_Fpower);
+
+  msleep(30);
+
+}
+
+void reverse() //both wheels go back
+
+{ 
+
+  printf("reversing\n");
+
+  motor(rmotor, motor_Bpower);
+
+  motor(lmotor, motor_Bpower);
+
+  msleep(reverse_Time);
+
+}
+
+void stop() //0powertomotor
+
+{
+
+  printf("stop\n");
+
+  motor(rmotor, motor_stoppower);
+
+  motor(lmotor, motor_stoppower);
+
+}
+
+void turnRight() // right wheel goes back while left goes forward to make right turn :) 
+
+{ 
+
+  printf("Turning right\n");
+
+  motor(rmotor,motor_Bpower);
+
+  motor(lmotor,motor_Fpower);
+
+  msleep(turn_time);
+
+     turn_time=700;
+
+      printf("Returning turn time\n");
+
+}
+
+void turnLeft() //opposite right
+
+{
+
+  printf("Turning Left\n");
+
+  motor(rmotor,motor_Fpower);
+
+  motor(lmotor,motor_Bpower);
+
+  msleep(turn_time);
+
+  turn_time=700;
+
+      printf("Returning turn time\n");
+
+}
+
+void oneeighty() //longer right
+
+{
+
+  printf("Turning around\n");
+
+  motor(rmotor,motor_Bpower);
+
+  motor(lmotor,motor_Fpower);
+
+  msleep(flip_time);
+
+}
+
+ 
+
+//main method
+
+int main()
+
+{     
+
+  shut_down_in(305.0);//ending timer
+
+  while(1) //loop
+
+  {
+
+      //random system
+
+            if(lcount>rcount+2 || rcount>lcount+2 || rcount>2|| lcount>2)/*if the left counter is pressed without the right counter being pressed after and vice versa set the count to zero*/
+
+      {
+
+          lcount=0;
+
+          rcount=0;
+
+      }
+
+      if(lcount==2 && rcount==2) //if the counts equal 2 run random function
+
+      {
+
+           printf("turn around time\n");
+
+          lcount=0;
+
+          rcount=0;
+
+		oneeighty();
+
+ 	  }
+
+      drivestraight();
+
+      if(digital(lsensor)==1 && digital(rsensor)==0) //something to the left side stop reverse turn right then back to the top
+
+      {
+
+      stop();
+
+      reverse();
+
+      turnRight();
+
+      lcount++;
+
+             
+
+      }
+
+      if(digital(rsensor)==1 && digital(lsensor)==0) //something on the right stop reverse then turn left then back
+
+      {
+
+      stop();
+
+      reverse();
+
+      turnLeft();
+
+      rcount++;
+
+      }
+
+      if(digital(rsensor)==1 && digital(lsensor)==1) //something in front stop oneeighty then go
+
+      {
+
+      stop();
+
+      oneeighty();
+
+      }
+
+      
+
+  }
+
+  return 0;
+
+}

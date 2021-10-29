@@ -1,0 +1,62 @@
+// designed and coded by mason and daniel
+#include <kipr/wombat.h>
+
+// VARIABLES
+int fas = 2;
+int sas = 3;
+int lmotor = 0;
+int rmotor = 3;
+int fpower = 60;
+int sfpower= 50;
+int turncount=1;
+int turn= 1300;
+
+// VOID METHODS
+void drivestraight() { //drives both motors foward
+  motor(rmotor, fpower);
+  motor(lmotor, fpower);
+}
+
+void logictest(){ //checks if Meg is close enough to turn
+  if(analog(fas)>=2800 && turncount==1){
+      motor(rmotor,fpower);
+      motor(lmotor,-fpower);
+      msleep(turn);
+      turncount++;
+  }
+  if(analog(fas)>=2800 && turncount==2){ //checks if Meg is close to the final wall
+      printf("meg #1\n victory royale!\n");
+      shut_down_in(0); //shuts meg down after reaching 2nd wall
+  }
+}
+
+void farout(){
+    while(2000 <= analog(sas) && analog(sas) <= 2500){ //veers Meg closer to wall when shes too far
+  	motor(rmotor,sfpower);
+    motor(lmotor,fpower);
+  }
+}
+
+void tooclose(){
+  while(analog(sas)>=2850){ //veers Meg away from wall if shes too close
+    motor(rmotor,fpower);
+    motor(lmotor,sfpower);
+  }
+}
+
+// MAIN INSTRUCTIONS
+int main()
+{
+ while(1)
+ {
+  drivestraight();
+  logictest();
+  farout();
+  logictest();
+  tooclose();
+  logictest();
+ }
+    return 0;
+}
+
+

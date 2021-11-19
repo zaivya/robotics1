@@ -1,1 +1,60 @@
+//built and programed by mason & daniel
+
+#include <kipr/wombat.h>
+
+//VARIABLES//
+int rmotor = 3;
+int lmotor = 0;
+int fpower = 30;
+int jpower = 30;
+int bsensor = 0;
+int fsensor = 1;
+int black = 2800;
+int wallDistance = 2850;
+int servo = 0;
+
+//VOID METHODS//
+void jitterl(){ //makes meg veer left while driving foward
+    motor(rmotor, 60);
+    motor(lmotor, 10);
+}
+void jitterr(){ //makes meg veer right while driving foward
+    motor(rmotor, 10);
+    motor(lmotor, 60);
+}
+void stop(){ //makes meg stop moving around
+    motor(rmotor, 0);
+    motor(lmotor, 0);
+    msleep(500);
+}
+void wave(){ //makes meg wave her hand
+    while(1){
+      enable_servos();
+    	set_servo_position(servo, 1600);
+    	msleep(500);
+		  set_servo_position(servo, 2047);
+      msleep(500);
+    } 
+}
+void smileAndWave(){ //meg checks if shes close enough to the wall at the end. if she is, she runs the wave method
+  if(analog(fsensor)>= wallDistance){
+    ao();
+    shut_down_in(5);
+    wave();
+    }
+}
+    
+//MAIN METHODS//
+int main(){
+    	while(1){ //loops code until shutdown
+      		while(analog(bsensor)>=black){ //runs jitterr() if the downward facing sensor sees the black line
+          		jitterr(); //veers meg right (if shes already on the line)
+      		}
+      		while(analog(bsensor)<black){ //runs jitterl() and smileAndWave() if the downward facing sensor doesnt see the black line
+         		jitterl(); //veers meg left (when shes not on the line)
+            smileAndWave(); //if meg reaches the end wall, she stops, waves, and shuts down
+            }
+      	}
+    return 0;
+}
 

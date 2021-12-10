@@ -1,1 +1,73 @@
+//designed and programmed by mason & daniel
+#include <kipr/wombat.h>
+
+//VARIABLES
+int red = 0;
+int lmotor=3;
+int rmotor=0;
+int ynear = 90;
+
+//VOID METHODS
+void turnleft(){//create a speed differential to make it turn left
+	motor(lmotor,40);
+	motor(rmotor,0);
+}
+void turnright(){//create a speed differential to make it turn right
+	motor(rmotor,40);
+	motor(lmotor,0);
+}
+void straight(){//power motors to drive straight
+	motor(lmotor,50);
+	motor(rmotor,50);
+}
+void stop(){
+    ao();
+}
+void printposition(){// print variable values to describe where the bounding box is read
+    if(get_object_count(red) > 0){//standard format print info
+    	printf("object x value: %d \n", get_object_center_x(red,0));
+        printf("object y value: %d \n", get_object_center_y(red,0));
+    }
+    else{//if no bounding box is read
+    	printf("meg sees no red \n");
+	}
+}
+void sitandwait(){
+    while(get_object_count(red)==0){ //makes meg wait until an object is infront of her
+        camera_update();
+        stop();
+        printf("meg is waiting... please present red object\n");
+        msleep(200);
+    }
+}
+void megmoves(){
+    if(get_object_center_x(red,0)>85){ //turns right if object is on right side of frame
+        turnright();
+        printf("on the right!\n");
+    }
+   	if(get_object_center_x(red,0)<75){ //turns left if object is on left side of frame
+    	turnleft();
+        printf("on the left!\n");
+    }
+    if(get_object_center_x(red,0)>75 && get_object_center_x(red,0)<85){ //drives foward if object is in the center of the frame
+      	straight();
+        printf("full speed ahead!\n");
+    }
+}
+
+//MAIN METHOD
+int main(){
+    camera_open_black();
+	sitandwait(); //meg waits, not moving until it sees a red object
+    while(get_object_center_y(red,0)<ynear){ //makes meg pathfind to the object until it gets close enough
+    	camera_update();
+    	//printposition(); //used during developement to print the position of the object
+       	megmoves(); // instructs meg to turn toward, and drive toward object
+    }
+    if(get_object_center_y(red,0)>=ynear){ //stops meg when the object is at the bottom center of the frame (when its right infront)
+       	printf("meg has reached the object");
+        stop();
+    }
+    return 0;
+}
 

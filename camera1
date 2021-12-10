@@ -1,1 +1,89 @@
+//designed, built, and coded by mason and daniel
+#include <kipr/wombat.h>
+
+// VARIABLES
+int red = 0;
+int green = 1;
+int blue = 2;
+int rp=2000;
+int positiono=0;
+int positionl=1;
+
+// VOID METHODS
+void redservo(){//unique movement of servo for red
+	enable_servos();
+	set_servo_position(0,0);// set the position to 0 and give it time to get there
+ 	msleep(400);
+	set_servo_position(0,rp);//for the rest of the method add change the servo positon once every 400 milliseconds for wacky wave pattern
+    rp++;
+ 	msleep(400);
+    set_servo_position(0,rp);
+    rp++;
+  	msleep(400);
+    set_servo_position(0,rp);
+    rp++;
+  	msleep(400);
+    set_servo_position(0,rp);
+    rp++;
+ 	msleep(400);
+    disable_servos();
+}
+void greenservo(){//unique movement of servo for green
+	enable_servos();
+	set_servo_position(0,0);
+    msleep(500);
+    set_servo_position(0,1000);
+    msleep(500);
+	disable_servos();
+}
+void blueservo(){
+	enable_servos();
+	set_servo_position(0,1000);
+    msleep(500);
+    set_servo_position(0,2000);
+    msleep(500);
+	disable_servos();
+}
+void lookforblue(){
+    if(get_object_count(2) >= 1){
+    	printf("meg sees blue\n");
+       	blueservo();
+    }
+}
+void lookforred(){
+    if(get_object_count(0) >= 1){
+    	printf("meg sees red\n");
+        redservo();
+   	}
+}
+void lookforgreen(){
+    if(get_object_count(1) >= 1){
+        printf("meg sees green\n"); 
+     	greenservo();
+    } 
+}
+void colorblind(){
+    if(get_object_count(1) == 0 && get_object_count(2) == 0 &&get_object_count(0) == 0){
+      	printf("meg does not see any color\n");
+    }
+}
+
+//MAIN METHOD
+int main()
+{
+    camera_open_black();
+    while(digital(0)==0){ //loops until external button is pushed
+    	camera_update();
+    	lookforblue(); //checks for object in blue channel. if one or more are detected, meg waves and reports findings
+    	camera_update();
+    	lookforred(); //checks for object in red channel. if one or more are detected, meg waves and reports findings
+        camera_update();
+        lookforgreen(); //checks for object in green channel. if one or more are detected, meg waves and reports findings
+        camera_update();
+        colorblind(); // checks for, and reports if no object in the red, blue, or green channels are detected
+    }
+    camera_close();
+    shut_down_in(0);
+    return 0;
+}
 

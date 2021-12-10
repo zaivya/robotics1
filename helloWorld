@@ -1,0 +1,34 @@
+//Partner: Daniel Marraccino
+
+#include <kipr/wombat.h>
+
+int main()
+{
+ printf("Starting Square Sequence!\n");
+	int turns = 0;
+
+//foward and right turn loop
+    while (turns < 4) {
+	//foward
+	printf("Moving Foward!\n");
+ 	motor(0, 80);
+ 	motor(3, 80);
+ 	msleep(2000);
+ 	motor(0, 0);
+ 	motor(3, 0);
+ 	msleep(400);
+	//right
+	printf("Turning Right!\n");
+ 	motor(0, -80);
+ 	motor(3, 80);
+ 	msleep(1020);
+ 	motor(0, 0);
+ 	motor(3, 0);
+ 	msleep(400);
+    turns++;
+    }
+    printf("Meg has completed the square!\n");
+    msleep(5000);
+ 	ao();
+ 	return 0;
+}

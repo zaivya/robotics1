@@ -1,0 +1,143 @@
+#include <kipr/wombat.h>
+//VARIABLES//
+int Firstcounter=0;
+int Secondcounter=0;
+int wall1 = 700;
+int wall2 = 5000;
+int wall3 = 5000;
+int closed=1118;
+int rdsensor=1;
+int ldsensor=3;
+int rmotor=1;
+int lmotor=0;
+int open=862;
+//arm
+int claw=1;
+int lservo=0;
+int rservo=2;
+int lpos=1871;
+int rpos=176;
+
+//VOID
+void left_turn(){
+	motor(lmotor,40);
+	motor(rmotor,100);
+	msleep(3950);
+    motor(lmotor,10);
+	motor(rmotor,100);
+	msleep(3000);
+    motor(lmotor,100);
+    motor(rmotor,100);
+    msleep(2500);
+}
+void turn_around(){
+    motor(lmotor,100);
+    motor(rmotor,25);
+    msleep(4500);
+    motor(lmotor,100);
+    motor(rmotor,60);
+    msleep(4500);
+    motor(lmotor,100);
+    motor(rmotor,20);
+    msleep(800);
+    motor(lmotor,100);
+    motor(rmotor,100);
+    msleep(500);
+    ao();
+    
+}
+void intbox_wall_follow(){
+	while(1){
+		if(analog(0)>2999){
+        break;
+        }
+		if(analog(rdsensor)>=1890){
+			motor(rmotor,100);
+			motor(lmotor,5);
+        }
+		if(analog(rdsensor)<1890){
+			motor(rmotor,5);
+			motor(lmotor,100);
+		}
+	}
+}
+void first_wall_follow(){
+	while(Firstcounter<=wall1){
+		Firstcounter++;
+        printf("counter=%d\n", Firstcounter);
+		if(analog(rdsensor)>=1890){
+			motor(rmotor,100);
+			motor(lmotor,60);
+        }
+		if(analog(rdsensor)<1890){
+			motor(rmotor,60);
+			motor(lmotor,100);
+		}
+	}
+}
+void second_wall_follow(){
+	while(Secondcounter<=5000){
+		Secondcounter++;
+		if(analog(rdsensor)>900){
+			motor(rmotor,100);
+			motor(lmotor,60);
+		}
+		if(analog(rdsensor)<900){
+			motor(rmotor,60);
+			motor(lmotor,100);
+		}
+	}
+}
+void final_wall_follow(){
+	while(analog(0)>2999){
+	
+		if(analog(rdsensor)>=2900){
+			motor(rmotor,100);
+			motor(lmotor,60);
+		}
+		if(analog(rdsensor)<=2900){
+			motor(rmotor,100);
+			motor(lmotor,60);
+		}
+	}
+}    
+void arm_close_raise(){
+    //going up
+    enable_servos();
+    set_servo_position(claw,closed);
+    msleep(800);
+    while(lpos > 371 && rpos < 1676){
+        lpos = lpos-1;
+        rpos++;
+        msleep(1);
+    	set_servo_position(lservo,lpos);
+    	set_servo_position(rservo, rpos);
+    }
+    disable_servos();
+}
+void arm_open_lower(){
+  enable_servos();
+    set_servo_position(claw,open);
+    msleep(800);
+	set_servo_position(lservo,1871);
+    set_servo_position(rservo,176);
+    msleep(1000);
+    disable_servos();
+}
+
+//MAIN
+int main(){
+    //arm_open_lower();
+    intbox_wall_follow();
+	first_wall_follow();
+	left_turn();
+	turn_around();
+    arm_close_raise();
+	//final_wall_follow();
+    //arm_open_lower();
+    
+    return 0;
+}
+    
+
+
